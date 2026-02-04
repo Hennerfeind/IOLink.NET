@@ -114,7 +114,12 @@ public static class IoddComplexWriter
 
         // For multi-field records, we need to account for the reader's field-level reversal
         // The reader will reverse the bytes of each field individually, so we pre-reverse them
+#if NETSTANDARD2_0
+        var reversedBytes = bytes.ToArray();
+        reversedBytes.Reverse();
+#else
         var reversedBytes = bytes.Reverse().ToArray();
+#endif
         return new BitArray(reversedBytes);
     }
 
@@ -130,6 +135,11 @@ public static class IoddComplexWriter
         }
 
         // Reverse to compensate for the reader's reversal
+#if NETSTANDARD2_0
+        bytes.Reverse();
+        return bytes;
+#else
         return bytes.Reverse().ToArray();
+#endif
     }
 }

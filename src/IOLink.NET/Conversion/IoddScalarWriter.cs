@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Numerics;
 using System.Text;
+
 using IOLink.NET.Conversion.Extensions;
 using IOLink.NET.IODD.Resolution;
 using IOLink.NET.IODD.Structure.Datatypes;
@@ -16,7 +17,11 @@ public class IoddScalarWriter
             { Datatype: KindOfSimpleType.Float } => WriteFloat(value),
             { Datatype: KindOfSimpleType.UInteger } => WriteUInt(value, typeDef.Length),
             { Datatype: KindOfSimpleType.Integer } => WriteInt(value, typeDef.Length),
+#if NETSTANDARD2_0
+            { Datatype: KindOfSimpleType.OctetString } => Converter.FromHexString((string)value),
+#else
             { Datatype: KindOfSimpleType.OctetString } => Convert.FromHexString((string)value),
+#endif
             ParsableStringDef s => WriteString(s, (string)value),
             _ => throw new NotImplementedException(),
         };
@@ -70,16 +75,29 @@ public class IoddScalarWriter
     private static byte[] WriteFloat(object value)
     {
         var bytes = new byte[4];
+#if NETSTANDARD2_0
+        bytes.WriteSingleBigEndian((float)value);
+#else
         BinaryPrimitives.WriteSingleBigEndian(bytes, (float)value);
+#endif
         return bytes;
     }
 
+#if NETSTANDARD2_0
     private static byte[] WriteInt<R>(
-        object value,
-        ushort bitLength,
-        Func<object, R> conversionFunc
-    )
-        where R : IBinaryInteger<R>
+    object value,
+    ushort bitLength,
+    Func<object, R> conversionFunc
+)
+    {
+        throw new NotImplementedException();
+    }
+#else
+    private static byte[] WriteInt<R>(
+    object value,
+    ushort bitLength,
+    Func<object, R> conversionFunc
+    ) where R : IBinaryInteger<R>
     {
         R val = conversionFunc(value);
         byte[] bytes = new byte[val.GetByteCount()];
@@ -90,4 +108,5 @@ public class IoddScalarWriter
             ? limitedBytes.PinNegativeIntToRequiredBitLength(bitLength)
             : limitedBytes;
     }
+#endif
 }

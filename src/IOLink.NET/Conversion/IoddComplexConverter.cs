@@ -17,7 +17,13 @@ internal static class IoddComplexConverter
     private static IEnumerable<(string key, object value)> ConvertArrayT(ParsableArray arrayTypeDef, ReadOnlySpan<byte> data)
     {
         var result = new List<(string key, object value)>();
+#if NETSTANDARD2_0
+        var reversedData = data.ToArray();
+        reversedData.Reverse();
+        var bits = new BitArray(reversedData);
+#else
         var bits = new BitArray(data.ToArray().Reverse().ToArray());
+#endif
         var arrayBitLength = arrayTypeDef.Length * arrayTypeDef.Type.Length;
         for (var i = 1; i <= arrayTypeDef.Length; i++)
         {
@@ -32,13 +38,26 @@ internal static class IoddComplexConverter
     private static IEnumerable<(string key, object value)> ConvertRecordType(ParsableRecord recordType, ReadOnlySpan<byte> data)
     {
         var result = new List<(string key, object value)>();
+#if NETSTANDARD2_0
+        var reversedData = data.ToArray();
+        reversedData.Reverse();
+        var bits = new BitArray(reversedData);
+#else
         var bits = new BitArray(data.ToArray().Reverse().ToArray());
+#endif
         foreach (ParsableRecordItem? recordItemDef in recordType.Entries.OrderBy(x => x.BitOffset))
         {
+#if NETSTANDARD2_0
+            var readWithPadding = ReadWithPadding(bits, recordItemDef.BitOffset, recordItemDef.Type.Length).ToArray();
+            readWithPadding.Reverse();
+#else
+            var readWithPadding = ReadWithPadding(bits, recordItemDef.BitOffset, recordItemDef.Type.Length).ToArray().Reverse().ToArray();
+#endif
             var translatedOffset = (ushort)(recordType.Length - recordItemDef.BitOffset);
             result.Add((recordItemDef.Name,
                 IoddScalarReader.Convert(recordItemDef.Type,
-                ReadWithPadding(bits, recordItemDef.BitOffset, recordItemDef.Type.Length).ToArray().Reverse().ToArray())));
+                readWithPadding)));
+
         }
 
         return result;

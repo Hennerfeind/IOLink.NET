@@ -18,9 +18,21 @@ public static class ByteArrayExtensions
         return data;
     }
 
+#if NETSTANDARD2_0
+    public static byte[] TruncateToBitLength(this byte[] data, ushort bitLength)
+    {
+        int requiredByteLength = bitLength / 8 + (bitLength % 8 != 0 ? 1 : 0);
+        int startIndex = data.Length - requiredByteLength;
+
+        byte[] result = new byte[requiredByteLength];
+        Array.Copy(data, startIndex, result, 0, requiredByteLength);
+        return result;
+    }
+#else
     public static byte[] TruncateToBitLength(this byte[] data, ushort bitLength)
     {
         var requiredByteLength = bitLength / 8 + (bitLength % 8 != 0 ? 1 : 0);
         return data[(data.Length - requiredByteLength)..];
     }
+#endif
 }

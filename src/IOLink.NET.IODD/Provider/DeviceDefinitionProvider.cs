@@ -49,7 +49,12 @@ public class DeviceDefinitionProvider : IDeviceDefinitionProvider
         foreach (var xmlFile in xmlFiles)
         {
             using var xmlFileStream = xmlFile.Open();
+
+#if NETSTANDARD2_0
+            var xml = XDocument.Load(xmlFileStream, LoadOptions.None);
+#else
             var xml = await XDocument.LoadAsync(xmlFileStream, LoadOptions.None, cancellationToken);
+#endif
             if (IODDParser.IsIODDFile(xml))
             {
                 return xml;

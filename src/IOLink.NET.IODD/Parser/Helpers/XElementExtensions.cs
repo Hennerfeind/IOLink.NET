@@ -1,15 +1,22 @@
+using System.ComponentModel;
+using System.Globalization;
 using System.Xml.Linq;
 
 namespace IOLink.NET.IODD.Helpers;
 
 internal static class XElementExtensions
 {
+#if NETSTANDARD2_0
     public static T ReadMandatoryAttribute<T>(this XElement element, string attributeName)
-        where T : IParsable<T>
+        => (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, CultureInfo.InvariantCulture, element.ReadMandatoryAttribute(attributeName));
+#else
+    public static T ReadMandatoryAttribute<T>(this XElement element, string attributeName)
+    where T : IParsable<T>
     {
         string value = element.ReadMandatoryAttribute(attributeName);
         return T.Parse(value, null);
     }
+#endif
 
     // Overload for string specifically
     public static string ReadMandatoryAttributeAsString(this XElement element, string attributeName)
@@ -42,12 +49,20 @@ internal static class XElementExtensions
         return attribute?.Value;
     }
 
+#if NETSTANDARD2_0
+    public static T? ReadOptionalAttribute<T>(this XElement element, string attributeName)
+    {
+        string? value = element.ReadOptionalAttribute(attributeName);
+        return value is not null ? (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, CultureInfo.InvariantCulture, element.ReadOptionalAttribute(attributeName)) : default;
+    }
+#else
     public static T? ReadOptionalAttribute<T>(this XElement element, string attributeName)
         where T : IParsable<T>
     {
         string? value = element.ReadOptionalAttribute(attributeName);
         return value is not null ? T.Parse(value, null) : default;
     }
+#endif
 
     // Overload for bool specifically
     public static bool ReadOptionalAttributeAsBool(

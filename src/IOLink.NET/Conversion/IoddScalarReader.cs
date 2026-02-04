@@ -13,11 +13,20 @@ public class IoddScalarReader
     public static object Convert(ParsableSimpleDatatypeDef typeDef, ReadOnlySpan<byte> data)
         => typeDef switch
         {
+#if NETSTANDARD2_0
+            { Datatype: KindOfSimpleType.Boolean } => BitConverter.ToBoolean(data.ToArray(), 0),
+            { Datatype: KindOfSimpleType.Float } => data.ReadSingleBigEndian(),
+#else
             { Datatype: KindOfSimpleType.Boolean } => BitConverter.ToBoolean(data),
             { Datatype: KindOfSimpleType.Float } => BinaryPrimitives.ReadSingleBigEndian(data),
+#endif
             { Datatype: KindOfSimpleType.UInteger } => GetUint(data),
             { Datatype: KindOfSimpleType.Integer } => GetInt(data, typeDef.Length),
+#if NETSTANDARD2_0
+            { Datatype: KindOfSimpleType.OctetString } => data.ToHexString(),
+#else
             { Datatype: KindOfSimpleType.OctetString } => System.Convert.ToHexString(data),
+#endif
             ParsableStringDef s => ConvertString(s, data),
             _ => throw new NotImplementedException()
         };
@@ -120,8 +129,13 @@ public class IoddScalarReader
     private static string ConvertString(ParsableStringDef stringDef, ReadOnlySpan<byte> data)
         => stringDef.Encoding switch
         {
+#if NETSTANDARD2_0
+            StringTEncoding.ASCII => Encoding.ASCII.GetString(data.ToArray()),
+            StringTEncoding.UTF8 => Encoding.UTF8.GetString(data.ToArray()),
+#else
             StringTEncoding.ASCII => Encoding.ASCII.GetString(data),
             StringTEncoding.UTF8 => Encoding.UTF8.GetString(data),
+#endif
             _ => throw new NotImplementedException($"Encoding {stringDef.Encoding} is not supported.")
         };
 }

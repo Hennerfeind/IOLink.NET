@@ -115,7 +115,11 @@ public class IfmIotCoreMasterConnection : IMasterConnection
             return null;
         }
 
+#if NETSTANDARD2_0
+        return Converter.FromHexString(resp.Data.Value);
+#else
         return Convert.FromHexString(resp.Data.Value);
+#endif
     }
 
     public async Task<ReadOnlyMemory<byte>> ReadProcessDataInAsync(
@@ -127,7 +131,11 @@ public class IfmIotCoreMasterConnection : IMasterConnection
             new IfmIoTReadPdInRequest(portNumber),
             cancellationToken
         );
+#if NETSTANDARD2_0
+        return Converter.FromHexString(resp.Data.Value);
+#else
         return Convert.FromHexString(resp.Data.Value);
+#endif
     }
 
     public async Task<ReadOnlyMemory<byte>> ReadProcessDataOutAsync(
@@ -139,6 +147,10 @@ public class IfmIotCoreMasterConnection : IMasterConnection
             new IfmIoTReadPdOutRequest(portNumber),
             cancellationToken
         );
+#if NETSTANDARD2_0
+        return Converter.FromHexString(resp.Data.Value);
+#else
         return Convert.FromHexString(resp.Data.Value);
+#endif
     }
 }

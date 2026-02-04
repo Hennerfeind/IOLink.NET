@@ -22,6 +22,10 @@ public static class ByteArrayExtensions
     public static byte[] TruncateToBitLength(this byte[] data, ushort bitLength)
     {
         var requiredByteLength = bitLength / 8 + (bitLength % 8 != 0 ? 1 : 0);
+#if NETSTANDARD2_0
+        return [.. data.Skip(data.Length - requiredByteLength)];
+#else
         return data[(data.Length - requiredByteLength)..];
+#endif
     }
 }

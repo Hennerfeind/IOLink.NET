@@ -1,0 +1,17 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Tests/">
+    <Project Path="src/Tests/IOLink.NET.Core.Tests/IOLink.NET.Core.Tests.csproj" />
+    <Project Path="src/Tests/IOLink.NET.Tests/IOLink.NET.Tests.csproj" />
+    <Project Path="src/Tests/Vendors.Ifm/Vendors.Ifm.csproj" />
+  </Folder>
+  <Project Path="src/IOLink.NET.Core/IOLink.NET.Core.csproj" />
+  <Project Path="src/IOLink.NET.IODD/IOLink.NET.IODD.csproj" />
+  <Project Path="src/IOLink.NET.Vendors.Ifm/IOLink.NET.Vendors.Ifm.csproj" />
+  <Project Path="src/IOLink.NET.Visualization/IOLink.NET.Visualization.csproj" />
+  <Project Path="src/IOLink.NET/IOLink.NET.csproj" />
+</Solution>
