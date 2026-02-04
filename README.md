@@ -1,7 +1,7 @@
 # IOLink.NET
 
-##Info Fork
-Das ist ein Fork von "https://github.com/domdeger/IOLink.NET" erweitert für .NET-Standard 2.0, damit auch Projekte in .NET Framework realisiert werden können.
+## Info Fork
+This is a Fork from "https://github.com/domdeger/IOLink.NET" added with .NET-Standard 2.0, in Order to realize Projects in .NET Framework.
 
 
 **DISCLAIMER: IOLink.NET is currently under development and not yet feature complete. As soon as end-to-end functionality can be provide we will publish nuget packages and detailed code samples**
@@ -53,4 +53,5 @@ As every project that requires hardware components to be integrated we need devi
 | Name                | Support                                                                 |
 | ------------------- | ----------------------------------------------------------------------- |
 | ifm electronic gmbh | Kindly provided us with a starter set of their IoT IOLink Master AL1350 |
+
 
